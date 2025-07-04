@@ -24,7 +24,7 @@
 3. **เชื่อมต่อ Gmail ใน n8n**
 
    * เปิด **n8n Desktop** ▶️ **Credentials → Gmail OAuth2**
-   * วาง **Client ID** และ **Client Secret** (ที่ได้จาก Google Cloud)
+   * วาง **Client ID** และ **Client Secret** (ที่ได้จาก Google Cloud [https://console.cloud.google.com/apis/credentials/oauthclient])
    * กด **Connect** แล้วอนุญาตด้วยบัญชี `ccibauto@gmail.com`
 
 4. **สตาร์ท Extractor API**
