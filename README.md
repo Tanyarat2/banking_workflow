@@ -1,10 +1,19 @@
-# คู่มือใช้งาน Workflow ประมวลผลไฟล์ธนาคารอัตโนมัติ (สำหรับผู้ใช้ทั่วไป)
+# คู่มือใช้งาน Workflow ประมวลผลไฟล์ธนาคารอัตโนมัติ
 
 เอกสารนี้ช่วยให้คุณติดตั้งและใช้งานระบบอัตโนมัติบน n8n ได้โดยไม่ต้องเขียนโค้ดเอง มาดูขั้นตอนกันเลย:
 
 ---
+## สิ่งที่ต้องมี
+1. คอมพิวเตอร์ Windows
+2. Node.js (v14 ขึ้นไป)  ดาวน์โหลดตัวติดตั้งจาก https://nodejs.org ▶️ เลือก LTS ▶️ ติดตั้ง
+3. WinRAR  ดาวน์โหลดจาก https://www.win-rar.com ▶️ ติดตั้ง
+4. n8n Desktop  ดาวน์โหลดจาก https://n8n.io/download (เวอร์ชัน Windows) ▶️ ติดตั้ง
+5. บัญชี Gmail [ccibauto@gmail.com]  (ใช้สำหรับเชื่อมต่อ Gmail API)
+6. Google Cloud Project  ที่เปิดใช้งาน Gmail API และเพิ่มอีเมลของคุณเป็น Test user
+7. ไฟล์ Workflow  (bbl_workflow.json)  และ ไฟล์ API (server.js และ extract.py ถ้ามี)
+8. (ถ้ามีการใช้งานจากระยะไกล) ngrok  ดาวน์โหลดจาก https://ngrok.com/download ▶️ แตก ZIP แล้ววาง ngrok.exe
 
-## Quick Start (ใช้งานทันที)
+## Step-by-Step
 
 1. **ติดตั้งโปรแกรมหลัก**
 
