@@ -1,0 +1,386 @@
+{
+  "name": "BBL_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ 'C:/Users/CCIB1164_2PC69/Documents/BBL_merge/' + $json.newFileName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        560,
+        440
+      ],
+      "id": "75d3aa97-c0a6-45a1-9866-0a3787333b48",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const originalName = item.binary?.data?.fileName || item.json?.filename || \"\";\n\n  const regex = /^(\\d+_CCIB002)_(\\d{4}-\\d{2}-\\d{2})/;\n  const match = originalName.match(regex);\n\n  let newFileName = \"output.csv\";\n  if (match) {\n    newFileName = `${match[1]}_${match[2]}.csv`;\n  }\n\n  return {\n    json: { ...item.json, newFileName },\n    binary: item.binary,\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        440
+      ],
+      "id": "a507c964-be81-4adb-94be-810333018643",
+      "name": "file name"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "={{$json.newFileName}}"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        440
+      ],
+      "id": "3f639bba-788b-45cd-b4a6-a82d4fc338d9",
+      "name": "Convert to CSV"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        140
+      ],
+      "id": "120c16d0-3339-4eb8-a985-ef4edd205fe2",
+      "name": "Merge file"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "INBOX"
+          ],
+          "q": "[\"SUBJECT\", \"CCIB002\"]",
+          "readStatus": "both",
+          "sender": "bangkokbank"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -60,
+        -100
+      ],
+      "id": "460ad779-e22d-4f42-942c-547243920382",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zwi850Rjq6OwnOfO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "q": "[\"SUBJECT\", \"CCIB002\"]",
+          "sender": "bangkokbank"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        180,
+        -100
+      ],
+      "id": "2a4f249a-c3ed-4852-86c1-5cc33527d925",
+      "name": "Get many messages",
+      "webhookId": "9b1239fd-8745-46d0-8e1a-725d6afb8987",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zwi850Rjq6OwnOfO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{$json.id}}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        -100
+      ],
+      "id": "504fec60-dad1-4169-91b8-4ed1498e598b",
+      "name": "Get a message",
+      "webhookId": "00081d15-8317-4055-a2df-8e53491af290",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zwi850Rjq6OwnOfO",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst results = [];\n\nconst attachments = Object.keys(item.binary || {});\n\nfor (const field of attachments) {\n  const file = item.binary[field];\n  if (file.fileExtension === 'zip') {\n    results.push({\n      json: { zipName: file.fileName },\n      binary: {\n        data: file, // เปลี่ยนชื่อเป็น data เพื่อใช้ต่อใน Compression หรือ HTTP\n      }\n    });\n  }\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        -100
+      ],
+      "id": "11db14db-c1ef-43a4-89d6-d1153afe260e",
+      "name": "Only Zip",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "  https://5ed6-1-4-150-147.ngrok-free.app/extract",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "password",
+              "value": "CCIB5002"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        140
+      ],
+      "id": "e796f8ec-9c50-4a19-b8a1-adb8b4f234bf",
+      "name": "unzip with pass"
+    },
+    {
+      "parameters": {
+        "fileSelector": "C:/Users/CCIB1164_2PC69/Documents/extract_api/unzipped/*/*.xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        200,
+        140
+      ],
+      "id": "4bfbcb04-3c0b-43f4-bd57-13e0beda8351",
+      "name": "Read Files ",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        420,
+        140
+      ],
+      "id": "30fb94fc-9116-4d69-ac69-a1ca65d991fb",
+      "name": "Extract from File",
+      "alwaysOutputData": true
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "197b035122cd382c",
+          "threadId": "197b035122cd382c",
+          "snippet": "From: Regulatory.Coordination BBL Sent: Sunday, May 18, 2025 7:21 PM To: ccib 5 &lt;ccib5@ccib.go.th&gt; Cc: Watchareporn Jaikwang &lt;Watchareporn.Jaikwang@bangkokbank.com&gt;; Watsana Hongkularb &lt;",
+          "payload": {
+            "mimeType": "multipart/mixed"
+          },
+          "sizeEstimate": 21000680,
+          "historyId": "25724",
+          "internalDate": "1751007932000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "CATEGORY_PERSONAL",
+              "name": "CATEGORY_PERSONAL"
+            },
+            {
+              "id": "UNREAD",
+              "name": "UNREAD"
+            }
+          ],
+          "From": "\"Regulatory.Coordination BBL\" <Regulatory.Coordination.BBL@bangkokbank.com>",
+          "To": "ccib 5 <ccib5@ccib.go.th>",
+          "CC": "Watchareporn Jaikwang <Watchareporn.Jaikwang@bangkokbank.com>, Watsana Hongkularb <Watsana.Hongkularb@bangkokbank.com>",
+          "Subject": "RE: ขอนำส่งข้อมูลไฟล์อิเล็กทรอนิกส์ Template  04   ที่เกี่ยวข้องตามหมายเรียกฯ  CCIB002-2025-05-18"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "file name": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to CSV": {
+      "main": [
+        [
+          {
+            "node": "file name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge file": {
+      "main": [
+        [
+          {
+            "node": "Convert to CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Only Zip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only Zip": {
+      "main": [
+        [
+          {
+            "node": "unzip with pass",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unzip with pass": {
+      "main": [
+        [
+          {
+            "node": "Read Files ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Files ": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "084d22ee-dd7c-4697-91e5-2f22b94ee8c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "62276eb0d6e6ed1576e8b1b99dd1ed37b35dcc33f31ee9430e2ad93dce0d8f74"
+  },
+  "id": "R5Bj3uRZggCQhIDI",
+  "tags": []
+}
