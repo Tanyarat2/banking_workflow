@@ -47,6 +47,6 @@ out_dir = Path("C:\\Users\\CCIB1164_2PC69\\Documents\\BBL_merge")
 out_dir.mkdir(parents=True, exist_ok=True)
 out_csv = out_dir / f"{ID}_{prefix}_{date}.csv"
 
-# Write CSV with BOM for Excel
+# Write CSV
 df_all.to_csv(out_csv, index=False, encoding="utf-8-sig")
 print(f"Merged {len(files)} files -> {out_csv}")
