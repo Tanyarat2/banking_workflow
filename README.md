@@ -42,7 +42,7 @@
    * `/ping` ต้องขึ้น pong
    * `/extract` ต้องคืน JSON `{ "success": true, ... }` และแตกไฟล์ลง `C:\extract_api\unzipped`
 
-3. **สตาร์ท n8n**
+3. **สตาร์ท n8n in command prompt**
 
    ```powershell
    n8n
