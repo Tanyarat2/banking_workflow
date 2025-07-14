@@ -36,7 +36,7 @@
    curl http://localhost:3000/ping    # ควรตอบ pong
    curl -X POST http://localhost:3000/extract \
      -F file=@C:\extract_api\test.zip \
-     -F password=test01
+     -F password=CCIB5002
    ```
 
    * `/ping` ต้องขึ้น pong
@@ -133,5 +133,10 @@ README.md              # คู่มือนี้
 * **server มีปัญหาให้ลองในcommand promptก่อน ถ้าไม่ได้จริงๆให้ลองดู urlในnode unzip with pass -> [(http://localhost:3000), (http://<YOUR_MACHINE_IP>:3000/ping (find with ipconfig)), ( (EXP)https://1e2a7aca582c.ngrok-free.app/extract)]
 
 ---
-
-*ปรับเส้นทางและพอร์ตตามสภาพแวดล้อมของคุณ*
+## Run แบบไม่ใช้n8n
+1. command prompt -> cd C:\extract_api [copy จาก file pathที่save]
+2. npm install
+3. node server.js
+4. new command prompt -> pip install pandas xlrd
+5. python merge.py "C:\extract_api\unzipped"[copy จาก file pathที่save]
+6. ตรวจสอบ dir C:\BBL_merge
