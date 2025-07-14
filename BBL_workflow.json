@@ -1,0 +1,277 @@
+{
+  "name": "BBL_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "INBOX"
+          ],
+          "q": "[\"SUBJECT\", \"CCIB002\"]",
+          "readStatus": "unread",
+          "sender": "Regulatory.Coordination.BBL@bangkokbank.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c979f877-5e2c-41c9-9634-fec11e405623",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZH3zU4MKLOofyk4V",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "q": "[\"SUBJECT\", \"CCIB002\"]",
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "114e1172-ac4f-4c9b-bc68-03a620666412",
+      "name": "Get many messages",
+      "webhookId": "9b1239fd-8745-46d0-8e1a-725d6afb8987",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZH3zU4MKLOofyk4V",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{$json.id}}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "76d4842d-7abb-4ed2-b85c-a06ef7576b2f",
+      "name": "Get a message",
+      "webhookId": "00081d15-8317-4055-a2df-8e53491af290",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZH3zU4MKLOofyk4V",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst item = $input.first();\nconst results = [];\n\nfor (const [key, bin] of Object.entries(item.binary || {})) {\n  if (bin.fileExtension === 'zip') {\n    results.push({\n      json: { zipName: bin.fileName },\n      binary: { data: bin },    // ← must be “data”\n    });\n  }\n}\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "5d3fa2d1-2934-4caa-a435-a94ca36fa0bd",
+      "name": "Only Zip",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://2f5e1a770852.ngrok-free.app/extract",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "password",
+              "value": "CCIB5002"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        240
+      ],
+      "id": "eb0d1fa6-d4ab-43d5-a2e7-890e0f46aec4",
+      "name": "unzip with pass",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=\n\"C:\\Users\\User\\Desktop\\HW Ploy\\extract_api\"\n\"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\"\n\"merge.py\"\n\"unzipped\\{{$json[\"extracted\"][0]}}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        288,
+        240
+      ],
+      "id": "361664ac-8ebe-47c4-afa4-77c1c739e14b",
+      "name": "merge file",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=python \"C:\\Users\\CCIB1164_2PC69\\Documents\\extract_api\\merge.py\" {{ 'C:/Users/CCIB1164_2PC69/Documents/extract_api/unzipped/' + $json[\"extracted\"][0] }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        512,
+        640
+      ],
+      "id": "56602d92-4c01-4a73-936c-ec55e344b273",
+      "name": "merge file1",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "disabled": true
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "197b035122cd382c",
+          "threadId": "197b035122cd382c",
+          "snippet": "From: Regulatory.Coordination BBL Sent: Sunday, May 18, 2025 7:21 PM To: ccib 5 &lt;ccib5@ccib.go.th&gt; Cc: Watchareporn Jaikwang &lt;Watchareporn.Jaikwang@bangkokbank.com&gt;; Watsana Hongkularb &lt;",
+          "payload": {
+            "mimeType": "multipart/mixed"
+          },
+          "sizeEstimate": 21000680,
+          "historyId": "25724",
+          "internalDate": "1751007932000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "CATEGORY_PERSONAL",
+              "name": "CATEGORY_PERSONAL"
+            },
+            {
+              "id": "UNREAD",
+              "name": "UNREAD"
+            }
+          ],
+          "From": "\"Regulatory.Coordination BBL\" <Regulatory.Coordination.BBL@bangkokbank.com>",
+          "To": "ccib 5 <ccib5@ccib.go.th>",
+          "CC": "Watchareporn Jaikwang <Watchareporn.Jaikwang@bangkokbank.com>, Watsana Hongkularb <Watsana.Hongkularb@bangkokbank.com>",
+          "Subject": "RE: ขอนำส่งข้อมูลไฟล์อิเล็กทรอนิกส์ Template  04   ที่เกี่ยวข้องตามหมายเรียกฯ  CCIB002-2025-05-18"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Only Zip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only Zip": {
+      "main": [
+        [
+          {
+            "node": "unzip with pass",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unzip with pass": {
+      "main": [
+        [
+          {
+            "node": "merge file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2aa2cd6b-f88f-4920-bb6c-7db0b2688c68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8ca8ceaed9a2262d99ab8c74b096c67572097231f8d4142930942e565375c235"
+  },
+  "id": "vlessMnV3EEZXNFT",
+  "tags": []
+}
