@@ -6,6 +6,7 @@ const { exec }   = require('child_process');
 
 const app  = express();
 const PORT = 3000;
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
@@ -14,23 +15,23 @@ app.use(fileUpload());
 app.get('/ping', (_req, res) => res.send('pong'));
 
 // Ensure folder exist
-const UPLOAD_DIR = path.join(__dirname, 'uploads');
-const OUT_BASE   = path.join(__dirname, 'unzipped');
+const upload = path.join(__dirname, 'uploads');
+const unzip   = path.join(__dirname, 'unzipped');
 
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-if (!fs.existsSync(OUT_BASE))   fs.mkdirSync(OUT_BASE,   { recursive: true });
+if (!fs.existsSync(upload)) fs.mkdirSync(upload, { recursive: true });
+if (!fs.existsSync(unzip))   fs.mkdirSync(unzip,   { recursive: true });
 
 // Extraction 
 app.post('/extract', async (req, res) => {
   //Normalize into array
   const maybeFiles   = req.files?.file;
-  const uploadsArray = Array.isArray(maybeFiles)
+  const uploadsArr = Array.isArray(maybeFiles)
     ? maybeFiles
     : maybeFiles
       ? [maybeFiles]
       : [];
 
-  if (uploadsArray.length === 0) {
+  if (uploadsArr.length === 0) {
     return res.status(400).send('Missing file upload (req.files.file)');
   }
   if (!req.body.password) {
@@ -40,10 +41,10 @@ app.post('/extract', async (req, res) => {
 
   try {
     // Loop over each uploaded ZIP
-    for (const zipFile of uploadsArray) {
+    for (const zipFile of uploadsArr) {
       const nameNoExt = path.parse(zipFile.name).name;
-      const zipPath   = path.join(UPLOAD_DIR, zipFile.name);
-      const outputDir = path.join(OUT_BASE,   nameNoExt);
+      const zipPath   = path.join(upload, zipFile.name);
+      const outputDir = path.join(unzip,   nameNoExt);  
 
       // Clean previous extraction
       if (fs.existsSync(outputDir)) {
@@ -84,7 +85,6 @@ app.post('/extract', async (req, res) => {
   }
 });
 
-// Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Extractor API running on port ${PORT}`);
 });
