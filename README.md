@@ -6,7 +6,7 @@
 ## สิ่งที่ต้องมี
 1. คอมพิวเตอร์ Windows
 2. Node.js (v14 ขึ้นไป)  ดาวน์โหลดตัวติดตั้งจาก https://nodejs.org ▶️ เลือก LTS ▶️ ติดตั้ง
-3. WinRAR  ดาวน์โหลดจาก https://www.win-rar.com ▶️ ติดตั้ง
+3. WinRAR/7z  ดาวน์โหลดจาก https://www.win-rar.com ▶️ ติดตั้ง
 4. n8n Desktop  ดาวน์โหลดจาก https://n8n.io/download (เวอร์ชัน Windows) ▶️ ติดตั้ง
 5. บัญชี Gmail [ccibauto@gmail.com]  (ใช้สำหรับเชื่อมต่อ Gmail API)
 6. Google Cloud Project  ที่เปิดใช้งาน Gmail API และเพิ่มอีเมลของคุณเป็น Test user
