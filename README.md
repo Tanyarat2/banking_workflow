@@ -140,3 +140,12 @@ README.md              # คู่มือนี้
 4. new command prompt -> pip install pandas xlrd
 5. python merge.py "C:\extract_api\unzipped"[copy จาก file pathที่save]
 6. ตรวจสอบ dir C:\BBL_merge
+
+---
+## Run m8m ตลอด
+```powershell
+   npm install -g pm2
+   pm2 start n8n --name n8n
+   pm2 save
+   pm2 startup    
+```
