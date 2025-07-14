@@ -3,7 +3,7 @@
 ---
 ## สิ่งที่ต้องมี
 1. Node.js (v14 ขึ้นไป)  ดาวน์โหลดตัวติดตั้งจาก https://nodejs.org ▶️ เลือก LTS ▶️ ติดตั้ง
-2. WinRAR/7z  ดาวน์โหลดจาก https://www.win-rar.com ▶️ ติดตั้ง
+2. WinRAR/7z  ดาวน์โหลดจาก https://www.win-rar.com / https://www.7-zip.org/download.html ▶️ ติดตั้ง
 3. n8n Desktop -> run in command prompt [npm install n8n -g]
 4. บัญชี Gmail [ccibauto@gmail.com (pass = automatic05)]  (ใช้สำหรับเชื่อมต่อ Gmail API)
 5. ไฟล์ Workflowจากgithub  (bbl_workflow.json)  และ ไฟล์ API (server.js และ merge.py)
