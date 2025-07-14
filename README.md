@@ -142,10 +142,23 @@ README.md              # คู่มือนี้
 6. ตรวจสอบ dir C:\BBL_merge
 
 ---
-## Run m8m ตลอด
+## Run n8n ตลอด
 ```powershell
    npm install -g pm2
    pm2 start n8n --name n8n
    pm2 save
    pm2 startup    
+```
+## Run server.js ตลอด
+```powershell
+   cd C:\extract_api [copy จาก file pathที่save]
+   pm2 start server.js --name extract_api
+   pm2 save
+   pm2 startup
+```
+```powershell
+   pm2 list         # ดูสถานะ
+   pm2 logs extract_api   # ดู log
+   pm2 restart extract_api   # รีสตาร์ท
+   pm2 stop extract_api      # หยุด
 ```
