@@ -31,12 +31,10 @@
    ใช้ url = http://localhost:3000
 
  **ทดสอบว่า API ทำงาน**
-
+ *สร้างไฟล์test.zipที่มีรหัสผ่านแล้วลอง
    ```powershell
    curl http://localhost:3000/ping    # ควรตอบ pong
-   curl -X POST http://localhost:3000/extract \
-     -F file=@C:\extract_api\test.zip \
-     -F password=CCIB5002
+   curl -X POST http://localhost:3000/extract -F "file=@C:\extract_api\test.zip" -F "password=CCIB5002"
    ```
 
    * `/ping` ต้องขึ้น pong
@@ -53,7 +51,8 @@
    1. เปิด **n8n Desktop**
    2. เข้าเมนู **Credentials ในnodegmail trigger → Gmail account**
    3. วาง **Client ID** และ **Client Secret** (ได้จาก Google Cloud[https://console.cloud.google.com/apis/credentials/oauthclient])
-   4. กด **Connect** เลือกบัญชี `ccibauto@gmail.com` แล้วกด **Allow**
+      [Client ID = 93697660957-rhu9b3na3bapdeko9dd733durbo20tnu.apps.googleusercontent.com], [Client Secret = OCSPX-yaAcM0XfXIsOxhl38cqJq84ywJSu]
+   5. กด **Connect** เลือกบัญชี `ccibauto@gmail.com` แล้วกด **Allow**
 
 5. **ngrok(ถ้าใช้ http://localhost:3000/extract ในnode unzip with pass ไม่ได้)**
 
