@@ -52,7 +52,7 @@
    2. เข้าเมนู **Credentials ในnodegmail trigger → Gmail account**
    3. วาง **Client ID** และ **Client Secret** (ได้จาก Google Cloud[https://console.cloud.google.com/apis/credentials/oauthclient])
       [Client ID = 93697660957-rhu9b3na3bapdeko9dd733durbo20tnu.apps.googleusercontent.com], [Client Secret = OCSPX-yaAcM0XfXIsOxhl38cqJq84ywJSu]
-   5. กด **Connect** เลือกบัญชี `ccibauto@gmail.com` แล้วกด **Allow**
+   4.. กด **Connect** เลือกบัญชี `ccibauto@gmail.com` แล้วกด **Allow**
 
 5. **ngrok(ถ้าใช้ http://localhost:3000/extract ในnode unzip with pass ไม่ได้)**
 
